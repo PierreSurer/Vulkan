@@ -1,8 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
-
-foreach(path ${CMAKE_PREFIX_PATH})
-  message("Path: " ${path})
-endforeach(path)
+cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 
 # set the project name
 set(PROJECT_NAME "Vulkan")
@@ -11,24 +7,30 @@ project(${PROJECT_NAME} VERSION 1.0)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-file(GLOB_RECURSE SRC_FILES src/*.cpp CONFIGURE_DEPENDS)
-add_executable(${PROJECT_NAME} ${SRC_FILES})
+# Add source files
+file(GLOB_RECURSE SOURCE_FILES 
+	${CMAKE_SOURCE_DIR}/src/*.cpp)
+	
+# Add header files
+file(GLOB_RECURSE HEADER_FILES 
+	${CMAKE_SOURCE_DIR}/src/*.h
+	${CMAKE_SOURCE_DIR}/src/*.hpp)
 
-# install glfw
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+# Define the executable
+add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/Libraries/glfw-3.3.6)
+# Define the include DIRs
+include_directories(
+	"${CMAKE_SOURCE_DIR}/src"
+  SYSTEM "${PROJECT_SOURCE_DIR}/Libraries"
+  SYSTEM "${PROJECT_SOURCE_DIR}/Libraries/glm"
+)
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/Libraries/glfw-3.3.6")
+
 target_link_libraries(${PROJECT_NAME} glfw)
-target_include_directories(${PROJECT_NAME} PUBLIC ${glfw3_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${glfw3_LIBRARIES})
 
-# install glm
-set(GLM_INCLUDE_DIR  OFF CACHE BOOL "" FORCE)
-set(GLM_LIBRARY_DIR  OFF CACHE BOOL "" FORCE)
 
-find_package(GLM REQUIRED)
-
-target_include_directories(${PROJECT_NAME} PUBLIC ${GLFW_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${GLFW_DEPENDENCIES})
+find_package(Vulkan REQUIRED)
+target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARIES})
+target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIR})
