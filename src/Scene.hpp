@@ -22,6 +22,14 @@ private:
     inline void createImageViews();
     inline void createRenderPass();
     inline void createGraphicsPipeline();
+    inline void createFramebuffers();
+    inline void createCommandPool();
+    inline void createCommandBuffers(); 
+    inline void createSyncObjects();
+    inline void drawFrame();
+
+    inline void recreateSwapChain();
+    inline void cleanupSwapChain();
 
     struct QueueFamilyIndices {
         std::optional<uint32_t> graphicsFamily;
@@ -49,6 +57,8 @@ private:
 
     VkShaderModule createShaderModule(const std::vector<char>& code);
 
+    static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
+
     GLFWwindow* window;
     VkInstance instance;
     VkPhysicalDevice physicalDevice;
@@ -66,6 +76,19 @@ private:
     VkRenderPass renderPass;
     VkPipelineLayout pipelineLayout;
     VkPipeline graphicsPipeline;
+
+    std::vector<VkFramebuffer> swapChainFramebuffers;
+    VkCommandPool commandPool;
+    std::vector<VkCommandBuffer> commandBuffers;
+
+    const int MAX_FRAMES_IN_FLIGHT = 2;
+    std::vector<VkSemaphore> imageAvailableSemaphores;
+    std::vector<VkSemaphore> renderFinishedSemaphores;
+    std::vector<VkFence> inFlightFences;
+    std::vector<VkFence> imagesInFlight;
+    size_t currentFrame;
+
+    bool framebufferResized;
 
 
 };
