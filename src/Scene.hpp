@@ -20,6 +20,8 @@ private:
     inline void createSurface();
     inline void createSwapChain();
     inline void createImageViews();
+    inline void createRenderPass();
+    inline void createGraphicsPipeline();
 
     struct QueueFamilyIndices {
         std::optional<uint32_t> graphicsFamily;
@@ -45,6 +47,8 @@ private:
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
+    VkShaderModule createShaderModule(const std::vector<char>& code);
+
     GLFWwindow* window;
     VkInstance instance;
     VkPhysicalDevice physicalDevice;
@@ -58,5 +62,10 @@ private:
     VkFormat swapChainImageFormat;
     VkExtent2D swapChainExtent;
     std::vector<VkImageView> swapChainImageViews;
+
+    VkRenderPass renderPass;
+    VkPipelineLayout pipelineLayout;
+    VkPipeline graphicsPipeline;
+
 
 };
