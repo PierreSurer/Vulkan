@@ -15,10 +15,17 @@ public:
     bool shouldClose() {return glfwWindowShouldClose(window);};
     VkExtent2D getExtent() {return {(uint32_t)width, (uint32_t)height};}
 
+    bool wasWindowResized() { return framebufferResized; }
+    void resetWindowResizedFlag() { framebufferResized = false; }
+
     void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 private:
+    static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
+
     int width;
     int height;
+    bool framebufferResized;
+
     GLFWwindow* window;
     
 };

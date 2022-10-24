@@ -23,13 +23,17 @@ private:
     void loadModels();
     void createPipelineLayout();
     void createPipeline();
-    void createCommandBuffer();
+    void createCommandBuffers();
 
     void drawFrame();
 
+    void freeCommandBuffers();
+    void recreateSwapChain();
+    void recordCommandBuffer(int imageIndex);
+
     WindowManager window;
     Device device;
-    SwapChain swapChain;
+    std::unique_ptr<SwapChain> swapChain;
     std::unique_ptr<Pipeline> pipeline;
     VkPipelineLayout pipelineLayout;
     std::vector<VkCommandBuffer> commandBuffers;
