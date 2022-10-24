@@ -1,4 +1,6 @@
 #include "Pipeline.hpp"
+
+#include "Model.hpp"
 #include <fstream>
 #include <stdexcept>
 
@@ -25,12 +27,15 @@ Pipeline::Pipeline(Device &device, const std::string& vertexPath, const std::str
     shaderStages[1].pNext = nullptr;
     shaderStages[1].pSpecializationInfo = nullptr;
 
+    auto bindingDescriptions = Model::Vertex::getBindingDescriptions();
+    auto attributeDescriptions = Model::Vertex::getAttributeDescriptions();
+
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vertexInputInfo.vertexAttributeDescriptionCount = 0;
-    vertexInputInfo.vertexBindingDescriptionCount = 0;
-    vertexInputInfo.pVertexAttributeDescriptions = nullptr;
-    vertexInputInfo.pVertexBindingDescriptions = nullptr;
+    vertexInputInfo.vertexAttributeDescriptionCount = (uint32_t)attributeDescriptions.size();
+    vertexInputInfo.vertexBindingDescriptionCount = (uint32_t)bindingDescriptions.size();
+    vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+    vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
 
     VkPipelineViewportStateCreateInfo viewportInfo{};
     viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -38,17 +43,6 @@ Pipeline::Pipeline(Device &device, const std::string& vertexPath, const std::str
     viewportInfo.pViewports = &configInfo.viewport;
     viewportInfo.scissorCount = 1;
     viewportInfo.pScissors = &configInfo.scissor;
-
-    VkPipelineColorBlendStateCreateInfo colorBlendInfo{};
-    colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-    colorBlendInfo.logicOpEnable = VK_FALSE;
-    colorBlendInfo.logicOp = VK_LOGIC_OP_COPY;  // Optional
-    colorBlendInfo.attachmentCount = 1;
-    colorBlendInfo.pAttachments = &configInfo.colorBlendAttachment;
-    colorBlendInfo.blendConstants[0] = 0.0f;  // Optional
-    colorBlendInfo.blendConstants[1] = 0.0f;  // Optional
-    colorBlendInfo.blendConstants[2] = 0.0f;  // Optional
-    colorBlendInfo.blendConstants[3] = 0.0f;  // Optional
 
     VkGraphicsPipelineCreateInfo pipelineInfo{};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -59,7 +53,7 @@ Pipeline::Pipeline(Device &device, const std::string& vertexPath, const std::str
     pipelineInfo.pViewportState = &viewportInfo;
     pipelineInfo.pRasterizationState = &configInfo.rasterizationInfo;
     pipelineInfo.pMultisampleState = &configInfo.multisampleInfo;
-    pipelineInfo.pColorBlendState = &colorBlendInfo;
+    pipelineInfo.pColorBlendState = &configInfo.colorBlendInfo;
     pipelineInfo.pDepthStencilState = &configInfo.depthStencilInfo;
     pipelineInfo.pDynamicState = nullptr;
 
@@ -82,8 +76,7 @@ Pipeline::~Pipeline() {
     vkDestroyPipeline(device.getDevice(), graphicsPipeline, nullptr);
 }
 
-PipelineConfigInfo Pipeline::defaultPipelineConfigInfo(uint32_t width, uint32_t height) {
-    PipelineConfigInfo configInfo{};
+void Pipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo, uint32_t width, uint32_t height) {
     configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     configInfo.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
@@ -129,6 +122,16 @@ PipelineConfigInfo Pipeline::defaultPipelineConfigInfo(uint32_t width, uint32_t 
     configInfo.colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
     configInfo.colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;              // Optional
 
+    configInfo.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    configInfo.colorBlendInfo.logicOpEnable = VK_FALSE;
+    configInfo.colorBlendInfo.logicOp = VK_LOGIC_OP_COPY;  // Optional
+    configInfo.colorBlendInfo.attachmentCount = 1;
+    configInfo.colorBlendInfo.pAttachments = &configInfo.colorBlendAttachment;
+    configInfo.colorBlendInfo.blendConstants[0] = 0.0f;  // Optional
+    configInfo.colorBlendInfo.blendConstants[1] = 0.0f;  // Optional
+    configInfo.colorBlendInfo.blendConstants[2] = 0.0f;  // Optional
+    configInfo.colorBlendInfo.blendConstants[3] = 0.0f;  // Optional
+
     configInfo.depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     configInfo.depthStencilInfo.depthTestEnable = VK_TRUE;
     configInfo.depthStencilInfo.depthWriteEnable = VK_TRUE;
@@ -139,8 +142,6 @@ PipelineConfigInfo Pipeline::defaultPipelineConfigInfo(uint32_t width, uint32_t 
     configInfo.depthStencilInfo.stencilTestEnable = VK_FALSE;
     configInfo.depthStencilInfo.front = {};  // Optional
     configInfo.depthStencilInfo.back = {};   // Optional
-
-    return configInfo;
 }
 
 std::vector<char> Pipeline::readFile(const std::string& filename) {

@@ -7,6 +7,7 @@
 #include "Device.hpp"
 #include "Pipeline.hpp"
 #include "SwapChain.hpp"
+#include "Model.hpp"
 
 class Scene {
 public:
@@ -14,11 +15,12 @@ public:
     ~Scene();
 
     Scene(const Scene&) = delete;
-    void operator=(const Scene&) = delete;
+    Scene operator=(const Scene&) = delete;
 
     void run();
 
 private:
+    void loadModels();
     void createPipelineLayout();
     void createPipeline();
     void createCommandBuffer();
@@ -31,5 +33,6 @@ private:
     std::unique_ptr<Pipeline> pipeline;
     VkPipelineLayout pipelineLayout;
     std::vector<VkCommandBuffer> commandBuffers;
+    std::unique_ptr<Model> model;
 
 };

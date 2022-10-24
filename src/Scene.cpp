@@ -23,6 +23,7 @@ Scene::Scene() :
     window(WIDTH, HEIGHT), 
     device(window),
     swapChain(device, window.getExtent()) {
+    loadModels();
     createPipelineLayout();
     createPipeline();
     createCommandBuffer();
@@ -48,7 +49,8 @@ void Scene::createPipelineLayout() {
 }
 
 void Scene::createPipeline() {
-    PipelineConfigInfo pipelineConfig = Pipeline::defaultPipelineConfigInfo(swapChain.getWidth(), swapChain.getHeight());
+    PipelineConfigInfo pipelineConfig{};
+    Pipeline::defaultPipelineConfigInfo(pipelineConfig, swapChain.getWidth(), swapChain.getHeight());
     pipelineConfig.renderPass = swapChain.getRenderPass();
     pipelineConfig.pipelineLayout = pipelineLayout;
     pipeline = std::make_unique<Pipeline>(device, "shaders/shader_vert.spv", "shaders/shader_frag.spv", pipelineConfig);
@@ -93,7 +95,8 @@ void Scene::createCommandBuffer() {
         vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
         pipeline->bind(commandBuffers[i]);
-        vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+        model->bind(commandBuffers[i]);
+        model->draw(commandBuffers[i]);
 
         vkCmdEndRenderPass(commandBuffers[i]);
         if(vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {
@@ -104,12 +107,22 @@ void Scene::createCommandBuffer() {
 
 }
 
+void Scene::loadModels() {
+    std::vector<Model::Vertex> vertices {
+        {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+    };
+
+    model = std::make_unique<Model>(device, vertices);
+}
+
 void Scene::drawFrame() {
     uint32_t imageIndex;
     auto result = swapChain.acquireNextImage(&imageIndex);
 
     if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-        throw std::runtime_error("");
+        throw std::runtime_error("failed to acquire swap chain image");
     }
 
     result = swapChain.submitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);

@@ -10,13 +10,13 @@
 #include <stdexcept>
 
 SwapChain::SwapChain(Device &device, VkExtent2D extent)
-    : device{device}, windowExtent{extent} {
-  createSwapChain();
-  createImageViews();
-  createRenderPass();
-  createDepthResources();
-  createFramebuffers();
-  createSyncObjects();
+    : device(device), windowExtent(extent) {
+    createSwapChain();
+    createImageViews();
+    createRenderPass();
+    createDepthResources();
+    createFramebuffers();
+    createSyncObjects();
 }
 
 SwapChain::~SwapChain() {
