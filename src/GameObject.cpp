@@ -6,7 +6,7 @@ GameObject GameObject::createGameObject() {
 
 }
 
-GameObject::GameObject(uint64_t id) : uid(id) {
+GameObject::GameObject(uint64_t id) : uid(id), color(1.0f), position(0.f), rotation(0.f), size(1.0f) {
 }
 
 GameObject::~GameObject() {

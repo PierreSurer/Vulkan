@@ -2,12 +2,6 @@
 #include <memory>
 
 #include "Model.hpp"
-struct Transform2DComponent {
-    float rotation;
-    glm::vec2 translation;
-    
-};
-
 class GameObject {
 public:
     static GameObject createGameObject();
@@ -22,7 +16,9 @@ public:
 
     std::shared_ptr<Model> model;
     glm::vec3 color;
-    Transform2DComponent transform2D;
+    glm::vec3 position;
+    glm::vec3 rotation;
+    float size;
 
 private:
     GameObject(uint64_t id);
