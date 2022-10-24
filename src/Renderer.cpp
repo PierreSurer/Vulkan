@@ -25,26 +25,26 @@ void Renderer::recreateSwapChain() {
     if (swapChain == nullptr) {
         swapChain = std::make_unique<SwapChain>(device, extent);
     } else {
-        swapChain = std::make_unique<SwapChain>(device, extent, std::move(swapChain));
-        if (swapChain->getImageCount() != commandBuffers.size()) {
-            freeCommandBuffers();
-            createCommandBuffers();
+        std::shared_ptr<SwapChain> oldSwapChain = std::move(swapChain);
+        swapChain = std::make_unique<SwapChain>(device, extent, oldSwapChain);
+
+        if (!oldSwapChain->compareSwapFormats(*swapChain.get())) {
+        throw std::runtime_error("Swap chain image(or depth) format has changed!");
         }
     }
-
 }
 
 void Renderer::createCommandBuffers() {
-    commandBuffers.resize(swapChain->getImageCount());
+    commandBuffers.resize(SwapChain::MAX_FRAMES_IN_FLIGHT);
 
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandPool = device.getCommandPool();
-    allocInfo.commandBufferCount = (uint32_t)commandBuffers.size();
+    allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
 
-    if(vkAllocateCommandBuffers(device.getDevice(), &allocInfo, commandBuffers.data()) != VK_SUCCESS) {
-        throw std::runtime_error("failed to allocate command buffer");
+    if (vkAllocateCommandBuffers(device.getDevice(), &allocInfo, commandBuffers.data()) != VK_SUCCESS) {
+        throw std::runtime_error("failed to allocate command buffers!");
     }
 }
 
