@@ -7,7 +7,7 @@
 #include "Device.hpp"
 #include "Pipeline.hpp"
 #include "SwapChain.hpp"
-#include "Model.hpp"
+#include "GameObject.hpp"
 
 class Scene {
 public:
@@ -20,7 +20,7 @@ public:
     void run();
 
 private:
-    void loadModels();
+    void loadGameObjects();
     void createPipelineLayout();
     void createPipeline();
     void createCommandBuffers();
@@ -31,12 +31,15 @@ private:
     void recreateSwapChain();
     void recordCommandBuffer(int imageIndex);
 
+    void renderGameObjects(VkCommandBuffer commandBuffer);
+    void updateGameObjects();
+
     WindowManager window;
     Device device;
     std::unique_ptr<SwapChain> swapChain;
     std::unique_ptr<Pipeline> pipeline;
     VkPipelineLayout pipelineLayout;
     std::vector<VkCommandBuffer> commandBuffers;
-    std::unique_ptr<Model> model;
+    std::vector<GameObject> gameObjects;
 
 };

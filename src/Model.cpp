@@ -1,5 +1,7 @@
 #include "Model.hpp"
 
+#include <cstring>
+
 Model::Model(Device &device, const std::vector<Vertex>& vertices) : device(device) {
 
     createVertexBuffer(vertices);
