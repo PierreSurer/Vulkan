@@ -19,7 +19,7 @@ public:
 
 private:
     void loadGameObjects();
-    void updateGameObjects();
+    void updateGameObjects(const float& dt);
     
     WindowManager window;
     Device device;

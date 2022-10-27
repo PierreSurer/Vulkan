@@ -42,7 +42,7 @@ function(add_shader TARGET SHADER)
 
     set(current-shader-path ${CMAKE_CURRENT_SOURCE_DIR}/src/shaders/${SHADER})
 	string(REPLACE "." "_" SHADER ${SHADER})
-    set(current-output-path ${CMAKE_BINARY_DIR}/Debug/shaders/${SHADER}.spv) #TODO release
+    set(current-output-path ${CMAKE_BINARY_DIR}/Release/shaders/${SHADER}.spv) #TODO release
 
     # Add a custom command to compile GLSL to SPIR-V.
     get_filename_component(current-output-dir ${current-output-path} DIRECTORY)

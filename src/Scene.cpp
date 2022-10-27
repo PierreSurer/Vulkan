@@ -1,5 +1,7 @@
 #include "Scene.hpp"
 
+#include <chrono>
+
 #include "SimpleRenderSystem.hpp"
 
 const uint32_t WIDTH = 800;
@@ -26,9 +28,9 @@ Scene::Scene() : window(WIDTH, HEIGHT), device(window), renderer(this->window, t
 Scene::~Scene() {
 }
 
-void Scene::updateGameObjects() {
+void Scene::updateGameObjects(const float& dt) {
     for(auto& obj : gameObjects) {
-        obj.rotation.y += .01f;
+        obj.update(dt);
     }
 }
 
@@ -48,12 +50,21 @@ void Scene::loadGameObjects() {
     gameObjects.push_back(std::move(triangle));
 }
 
+#include <iostream>
 void Scene::run() {
     SimpleRenderSystem simpleRenderSystem(device, renderer.getSwapChainRenderPass());
 
+    auto currentTime = std::chrono::high_resolution_clock::now();
+
     while (!window.shouldClose()) {
         glfwPollEvents();
-        updateGameObjects();
+
+        auto newTime = std::chrono::high_resolution_clock::now();
+        float dt = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+        currentTime = newTime;
+        std::cout<<1.0f/dt<<std::endl;
+
+        updateGameObjects(dt);
         auto extent = window.getExtent();
         mainCamera.update((float)extent.width, (float)extent.height); //TODO optimize
 

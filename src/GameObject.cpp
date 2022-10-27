@@ -6,8 +6,12 @@ GameObject GameObject::createGameObject() {
 
 }
 
-GameObject::GameObject(uint64_t id) : uid(id), color(1.0f), position(0.f), rotation(0.f), size(1.0f) {
+GameObject::GameObject(uint64_t id) : uid(id), color(1.0f), position(0.f), velocity(0.f), rotation(0.f), size(1.0f), mass(1.0f) {
 }
 
 GameObject::~GameObject() {
+}
+
+void GameObject::update(const float& dt) {
+    rotation.y += 20.0f * dt;
 }

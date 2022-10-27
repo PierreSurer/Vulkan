@@ -57,7 +57,7 @@ void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, Camera
         push.transform = glm::mat4(1.0f);
         push.transform *= camera.getProjection();
         push.transform *= glm::translate(glm::mat4(1.0f), obj.position);
-        push.transform *= glm::scale(glm::mat4(1.0f), glm::vec3(obj.size));
+        push.transform *= glm::scale(glm::mat4(1.0f), obj.size);
         push.transform *= glm::mat4_cast(glm::quat(glm::radians(obj.rotation)));
 
         vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
