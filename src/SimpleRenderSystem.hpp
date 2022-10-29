@@ -16,7 +16,7 @@ public:
     SimpleRenderSystem(const SimpleRenderSystem &) = delete;
     SimpleRenderSystem &operator=(const SimpleRenderSystem &) = delete;
 
-    void renderGameObjects(VkCommandBuffer commandBuffer, Camera& camera, std::vector<GameObject> &gameObjects);
+    void renderGameObjects(VkCommandBuffer commandBuffer, Camera& camera, std::vector<GameObject> &gameObjects, double worldTime);
 
 private:
     void createPipelineLayout();
