@@ -4,7 +4,7 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-Camera::Camera() : fov(70.0f), near(0.01f), far(150.0f), 
+Camera::Camera() : fov(70.0f), near(0.01f), far(500.0f), 
     position(0.f), rotation(0.f),
     moveSpeed(3.0f), lookSpeed(120.0f) {
 }

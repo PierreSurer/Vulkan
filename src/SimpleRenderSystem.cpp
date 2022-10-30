@@ -12,7 +12,7 @@
 
 struct SimplePushConstantData {
     alignas(4*4*4) glm::mat4 transform;
-    alignas(4*2) glm::vec2 offset;
+    alignas(4*4) glm::vec3 offset;
     alignas(4*2) double time;
 };
 
@@ -60,7 +60,7 @@ void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, Camera
         push.transform *= glm::scale(glm::mat4(1.0f), obj.size);
         push.transform *= glm::mat4_cast(glm::quat(glm::radians(obj.rotation)));
 
-        push.offset = glm::vec2(camera.position.x, camera.position.z);
+        push.offset = camera.position;
         push.time = worldTime;
 
         vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(SimplePushConstantData), &push);

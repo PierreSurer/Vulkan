@@ -35,7 +35,7 @@ void Scene::updateGameObjects(const float& dt) {
 }
 
 void Scene::loadGameObjects() {
-    Model::Builder builder = createPlane(glm::vec2(100.0f), 7, 0.75f);
+    Model::Builder builder = createPlane(glm::vec2(400.0f), 12, 0.f);
 
     auto model = std::make_shared<Model>(device, builder);
 
@@ -53,8 +53,12 @@ Model::Builder Scene::createPlane(glm::vec2 size, int subDivisions, float concen
         for(int j = 0; j <= subSize; j += 1) {
             float x = ((subSize - i) / (float)subSize) - 0.5f;
             float y = ((subSize - j) / (float)subSize) - 0.5f;
+            float posx = x * (4 * concentration * x * x + 1.0f - concentration);
+            float posy = y * (4 * concentration * y * y + 1.0f - concentration);
+            float dist = sqrt(posx * posx + posy * posy);
+            if(dist == 0.0f) dist = 1.0f;
             vertices.at(i * (subSize + 1) + j) = {
-                {size.x * x * (4 * concentration * x * x + 1.0f - concentration), 0.0f, size.y * y* (4 * concentration * y * y + 1.0f - concentration)},
+                {size.x * posx * abs(x) / dist, 0.0f, size.y * posy * abs(y) / dist},
                 {x + 0.5f, y + 0.5f, 255.0f / 255.0f}
             };
         }
