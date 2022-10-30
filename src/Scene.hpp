@@ -21,7 +21,7 @@ private:
     void loadGameObjects();
     void updateGameObjects(const float& dt);
 
-    Model::Builder createPlane(glm::vec2 size, int subDivisions, float concentration = 0.0f);
+    Model::Builder createPlane(float size, unsigned int subDivisions, float concentration = 0.0f);
     
     WindowManager window;
     Device device;

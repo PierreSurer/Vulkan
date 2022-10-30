@@ -35,7 +35,7 @@ void Scene::updateGameObjects(const float& dt) {
 }
 
 void Scene::loadGameObjects() {
-    Model::Builder builder = createPlane(glm::vec2(400.0f), 12, 0.f);
+    Model::Builder builder = createPlane(100.0f, 10, 6.0f);
 
     auto model = std::make_shared<Model>(device, builder);
 
@@ -46,21 +46,35 @@ void Scene::loadGameObjects() {
     gameObjects.push_back(std::move(triangle));
 }
 
-Model::Builder Scene::createPlane(glm::vec2 size, int subDivisions, float concentration) {
+Model::Builder Scene::createPlane(float size, unsigned int subDivisions, float concentration) {
     int subSize = (int)pow(2.0, (double)subDivisions);
     std::vector<Model::Vertex> vertices((subSize + 1) * (subSize + 1));
     for(int i = 0; i <= subSize; i += 1) {
         for(int j = 0; j <= subSize; j += 1) {
-            float x = ((subSize - i) / (float)subSize) - 0.5f;
-            float y = ((subSize - j) / (float)subSize) - 0.5f;
-            float posx = x * (4 * concentration * x * x + 1.0f - concentration);
-            float posy = y * (4 * concentration * y * y + 1.0f - concentration);
-            float dist = sqrt(posx * posx + posy * posy);
-            if(dist == 0.0f) dist = 1.0f;
+            float x = (subSize - i - subSize / 2) / (float)subSize;
+            float y = (subSize - j - subSize / 2) / (float)subSize;
+            float dist = sqrt(x * x + y * y) * subSize;
+            dist = std::max(dist, 1.0f);
+            // https://arxiv.org/ftp/arxiv/papers/1509/1509.06344.pdf
+            glm::vec3 pos;
+            if(abs(x) >= abs(y))
+                pos = {size * x * abs(x) / dist, 0.0f, size * y * abs(x) / dist};
+            else
+                pos = {size * x * abs(y) / dist, 0.0f, size * y * abs(y) / dist};
+
+            pos *= subSize;
+
+            float factor = pow(glm::length(pos) * 2.0f / size, concentration);
+            
+
+            pos *= factor;
+
             vertices.at(i * (subSize + 1) + j) = {
-                {size.x * posx * abs(x) / dist, 0.0f, size.y * posy * abs(y) / dist},
+                pos,
                 {x + 0.5f, y + 0.5f, 255.0f / 255.0f}
             };
+
+            
         }
     }
 
